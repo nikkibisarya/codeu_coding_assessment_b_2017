@@ -82,6 +82,28 @@ final class Test {
         });
 
     tester.test(
+        "Two Comments One Line With Many Spaces",
+         lines("note       \"comment 1\"  \"comment 2\";"),
+         new TestCriteria() {
+           @Override
+           public void onTestEnd(CallTable calls) throws Exception {
+              calls.assertNext("note", "comment 1", "comment 2");
+              calls.assertEnd();
+           }
+         });
+
+      tester.test(
+         "Two Comments One Line With Many Spaces & Semicolon",
+          lines("note   ;    \"comment 1\"  \"comment 2\";"),
+          new TestCriteria() {
+           @Override
+            public void onTestEnd(CallTable calls) throws Exception {
+               calls.assertNext("note", "comment 1", "comment 2");
+               calls.assertEnd();
+             }
+          });
+
+    tester.test(
         "Two Comments Two Lines",
         lines("note \"comment 1\"",
               "     \"comment 2\";"),
@@ -93,6 +115,32 @@ final class Test {
           }
         });
 
+      tester.test(
+         "Two Comments Two Lines and New Line",
+          lines("note \"comment 1\"",
+
+                      "     \"comment 2\";"),
+          new TestCriteria() {
+             @Override
+             public void onTestEnd(CallTable calls) throws Exception {
+                calls.assertNext("note", "comment 1", "comment 2");
+                calls.assertEnd();
+              }
+            });
+
+      tester.test(
+          "Two Comments Two Lines and New Line with Semicolons",
+           lines("note \"comment 1\"",
+                        ;;;;;;    ;;;;;
+                      "     \"comment 2\";"),
+           new TestCriteria() {
+              @Override
+              public void onTestEnd(CallTable calls) throws Exception {
+                  calls.assertNext("note", "comment 1", "comment 2");
+                  calls.assertEnd();
+                 }
+            });
+      
     tester.test(
         "Print One String",
         lines("print \"hello\";"),
@@ -152,6 +200,23 @@ final class Test {
           }
         });
 
+      tester.test(
+              "Adding two constant w/ Semicolons and New lines",
+              lines("let x = 5 + 3;",
+
+                      ;;;;
+
+                      ;
+
+                      "print x;"),
+              new TestCriteria() {
+                  @Override
+                  public void onTestEnd(CallTable calls) throws Exception {
+                      calls.assertNext("let", new AddOperation(5), new AddOperation(3));
+                      calls.assertNext("print", "8.0"); // use print to verify result
+                      calls.assertEnd();
+                  }
+              });
     tester.test(
         "Subtract two constant",
         lines("let x = 5 - 3;",
